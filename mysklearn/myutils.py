@@ -194,7 +194,39 @@ def tdidt_print_rules(tree, rule, class_name, default_header, attribute_names):
             tdidt_print_rules(value_list[2], rule2, class_name, default_header, attribute_names)
     else: # "Leaf"
         print(rule, "THEN", class_name, "=", tree[1])
+def calculate_accuracy(predicted, actual):
+    """Calculates the accuracy
+    Args:
+        predicted (list of obj)
+        actual (list of obj)
+    
+    Returns:
+        Accuracy (float)
+    """
+    right_num = 0
+    assert len(predicted) == len(actual)
+    for i in range(len(predicted)):
+        # See if each accurate
+        if predicted[i] == actual[i]:
+            right_num += 1
+    # Calculate accuracy
+    accuracy = right_num / len(predicted)
+    return accuracy
 
+def distribute_data_by_index(data, indices):
+    """Creates a list of the data at the indices in indices
+    Args:
+        data (list of obj)
+        indices (list of int)
+    
+    Returns:
+        data_subset (list of obj)
+    """
+    data_subset = []
+    for i in range(len(indices)):
+        data_subset.append(data[indices[i]])
+    return data_subset
+    
 # gets the X_train, X_test, y_train, y_test from the folds
 def get_trains_and_tests(X, y, X_train_fold, X_test_fold):
     X_train = [X[x] for x in X_train_fold]
