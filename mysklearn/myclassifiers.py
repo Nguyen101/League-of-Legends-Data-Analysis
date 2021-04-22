@@ -131,7 +131,7 @@ class MyKNeighborsClassifier:
         results = []
         for j in dists:
             for i in range(len(j)):
-                results.append(self.y_train[idxs[0][i]])
+                results.append(self.y_train[int(idxs[0][i])])
             y_predicted.append(max(set(results), key = results.count))
 
         return y_predicted

@@ -194,3 +194,11 @@ def tdidt_print_rules(tree, rule, class_name, default_header, attribute_names):
             tdidt_print_rules(value_list[2], rule2, class_name, default_header, attribute_names)
     else: # "Leaf"
         print(rule, "THEN", class_name, "=", tree[1])
+
+# gets the X_train, X_test, y_train, y_test from the folds
+def get_trains_and_tests(X, y, X_train_fold, X_test_fold):
+    X_train = [X[x] for x in X_train_fold]
+    y_train = [y[x] for x in X_train_fold]
+    X_test = [X[x] for x in X_test_fold]
+    y_test = [y[x] for x in X_test_fold]
+    return X_train, X_test, y_train, y_test
