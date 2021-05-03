@@ -217,3 +217,14 @@ def get_trains_and_tests(X, y, X_train_fold, X_test_fold):
     X_test = [X[x] for x in X_test_fold]
     y_test = [y[x] for x in X_test_fold]
     return X_train, X_test, y_train, y_test
+
+def get_win_count(table, win_col, column):
+    win_column = table.get_column(win_col)
+    oth_column = table.get_column(column)
+
+    total = 0
+    for i in range(len(win_column)):
+        if win_column[i] == oth_column[i]:
+            total += 1
+
+    return total / len(win_column)
