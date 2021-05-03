@@ -1,5 +1,6 @@
-import copy
 import mysklearn.myutils as myutils
+import copy
+import mysklearn.myevaluation as myevaluation
 
 class MySimpleLinearRegressor:
     """Represents a simple linear regressor.
@@ -382,3 +383,83 @@ class MyDecisionTreeClassifier:
             You will need to install graphviz in the Docker container as shown in class to complete this method.
         """
         pass # TODO: (BONUS) fix this
+class MyRandomForestClassifier:
+    
+    def __init__(self):
+        self.X_train = None 
+        self.y_train = None
+        self.trees = None
+
+    def fit(self, X_train, y_train, M=7, N=20, F=2):
+        """Fits a random forest classifier to X_train and y_train using the TDIDT (top down induction of decision tree) algorithm.
+        Args:
+            X_train(list of list of obj): The list of training instances (samples). 
+                The shape of X_train is (n_train_samples, n_features)
+            y_train(list of obj): The target y values (parallel to X_train)
+                The shape of y_train is n_train_samples
+        """
+        self.X_train = copy.deepcopy(X_train)
+        self.y_train = copy.deepcopy(y_train)
+
+        # create random stratified test set with 2:1 ratio     
+        X_remainder, X_test, y_remainder, y_test = myevaluation.train_test_split(copy.deepcopy(X_train), copy.deepcopy(y_train))
+
+        for i,x in enumerate(y_remainder):
+            X_remainder[i].append(x)
+        for i,x in enumerate(y_test):
+            X_test[i].append(x)
+        # generate N random decision trees using bagging
+        trees = []
+        for i in range(N):
+            # get the sample and validation sets
+            sample = myutils.compute_bootstrapped_sample(X_remainder)
+            validation_set = []
+            for x in X_remainder:
+                if x not in sample:
+                    validation_set.append(x)
+            # get the tree from the sample
+            available_attributes = myutils.get_available_attributes(sample)
+            tree = myutils.tdidt_random_forest(sample, [x for x in range(0, len(sample[0])-1)], available_attributes, F)
+            
+            # test against the validation set
+            validation_set_x = [x[:-1] for x in validation_set]
+            validation_set_y = [x[-1] for x in validation_set]
+            predictions = []
+            header = []
+            for i in range(0, len(validation_set_x[0])):
+                header.append("att" + str(i))
+            for x,y in zip(validation_set_x, validation_set_y):
+                prediction = myutils.tdidt_predict(header, tree, x)
+                predictions.append(int(prediction == y))
+            
+            trees.append({"accuracy": sum(predictions)/len(predictions), "tree": tree})
+        
+        # get the best M of N trees
+        trees = sorted(trees, key=lambda k: k["accuracy"], reverse=True) 
+        self.trees = trees[:M]
+    
+    def predict(self, X_test):
+        """Makes predictions for test instances in X_test.
+        Args:
+            X_test(list of list of obj): The list of testing samples
+                The shape of X_test is (n_test_samples, n_features)
+        Returns:
+            y_predicted(list of obj): The predicted target y values (parallel to X_test)
+        """
+
+        header = []
+        predictions = []
+        for i in range(0, len(X_test[0])):
+            header.append("att" + str(i))
+        for instance in X_test:
+            tree_predictions = {}
+            for tree in self.trees:
+                prediction = myutils.tdidt_predict(header, tree["tree"], instance)
+                if prediction in tree_predictions:
+                    tree_predictions[prediction] += 1
+                else:
+                    tree_predictions[prediction] = 1
+            
+            max_key = max(tree_predictions, key = tree_predictions.get)
+            predictions.append(max_key)
+        return predictions
