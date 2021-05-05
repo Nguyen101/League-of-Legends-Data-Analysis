@@ -1,5 +1,4 @@
 import math
-from os import major
 import random 
 import numpy as np
 import copy
@@ -34,48 +33,21 @@ def randomize_in_place(alist, parallel_list=None):
 
 def random_index (alist):
     return random.choice(alist)
-def mpg_to_doe(val):
-    if val <= 13:
-        return 1
-    elif 13 < val < 15:
-        return 2
-    elif 15 <= val < 17:
-        return 3
-    elif 17 <= val < 20:
-        return 4
-    elif 20 <= val < 24 :
-        return 5
-    elif 24 <= val < 27:
-        return 6
-    elif 27 <= val < 31:
-        return 7
-    elif 31 <= val < 37:
-        return 8
-    elif 37 <= val < 45:
-        return 9
-    elif val >= 45:
-        return 10
-    else:
-        return "error: val not in bins"
 
 def deep_copy_item(item):
     return copy.deepcopy(item)
     
 def all_same_class(instances):
-    # assumption: instances is not empty and class label is at index -1
     first_label = instances[0][-1]
     for instance in instances:
         if instance[-1] != first_label:
             return False 
-    return True # if we get here, all instance labels matched the first label
+    return True
 
 def select_attribute(instances, att_indexes, available_attributes):
     attribute_array = []
-    # for each avalailable index
     for i in att_indexes:
         attributes = {}
-        # get the frequency of each value
-        # eg: {senior: {true: 1, false, 2}, mid: {true: 3, false, 3}}
         for value in available_attributes["att"+str(i)]:
             attributes[value] = {}
         for instance in instances:
@@ -85,13 +57,11 @@ def select_attribute(instances, att_indexes, available_attributes):
             else:
                 attributes[att_val][instance[-1]] = 1
         attribute_array.append(attributes)
-    # loop through all the attributes and get the smallest weighted sum of entropy
     smallest_not_set = True
     smallest = 0
     smallest_index = 0
     for i, attributes in enumerate(attribute_array):
         weighted_sum = 0
-        # get the entropy of each
         for key in attributes:
             vals = []
             for key2 in attributes[key]:
@@ -198,20 +168,11 @@ def tdidt_print_rules(tree, rule, class_name, default_header, attribute_names):
 
 
 def distribute_data_by_index(data, indices):
-    """Creates a list of the data at the indices in indices
-    Args:
-        data (list of obj)
-        indices (list of int)
-    
-    Returns:
-        data_subset (list of obj)
-    """
     data_subset = []
     for i in range(len(indices)):
         data_subset.append(data[indices[i]])
     return data_subset
 
-# gets the X_train, X_test, y_train, y_test from the folds
 def get_trains_and_tests(X, y, X_train_fold, X_test_fold):
     X_train = [X[x] for x in X_train_fold]
     y_train = [y[x] for x in X_train_fold]
@@ -249,7 +210,7 @@ def get_available_attributes(table):
     return available_attributes
 
 def compute_random_subset(values, num_values):
-    shuffled = values[:] # shallow copy 
+    shuffled = values[:]
     random.shuffle(shuffled)
     return sorted(shuffled[:num_values])
 
@@ -301,11 +262,51 @@ def tdidt_random_forest(current_instances, att_indexes, att_domains, F):
             tree.append(values_subtree)
     return tree
 
+# functions added for the project
 def bar_chart(x, y):
-    if len(x) > 12:
+    if len(x) > 10:
         plt.figure(figsize=(18,5))
     else: 
         plt.figure()
     plt.bar(x, y, width=.5)
     plt.xticks(x, rotation=45, horizontalalignment="right", size='small')
     plt.show()
+
+def pie_chart(labs, data):
+    plt.figure()
+    plt.pie(data, labels=labs, autopct="%1.1f%%")
+    plt.show()
+    
+def get_column(table, header, col_name):
+    col_index = header.index(col_name)
+    col = []
+
+    for row in table: 
+        if row[col_index] != "NA":
+            col.append(row[col_index])
+    return col
+
+def team_win_count(table, win_col):
+    win_column = table.get_column(win_col)
+    team_1_win = 0
+    team_2_win = 0
+    for i in range(len(win_column)):
+        if win_column[i] == 1 :
+            team_1_win += 1
+        else:
+            team_2_win += 1
+    return team_1_win, team_2_win
+
+def build_confusion_matrix(mat):
+    for i in range(0, len(mat)):
+        recognition = 0
+        total = 0
+        for j in range(0, len(mat[i])):
+            if i == j:
+                recognition += mat[i][j]
+            total += mat[i][j]
+        if total != 0:
+            recognition = round((recognition / total) * 100, 2)
+        mat[i].insert(0, i+1)
+        mat[i].append(total)
+        mat[i].append(recognition)
