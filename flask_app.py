@@ -1,5 +1,8 @@
 import os 
 import pickle 
+import ast
+import copy
+from mysklearn.myclassifiers import MyRandomForestClassifier
 from flask import Flask, jsonify, request 
 
 app = Flask(__name__)
@@ -15,10 +18,24 @@ def predict():
     first_inhib = request.args.get("first_inhib", "")
     first_baron = request.args.get("first_baron", "")
     first_dragon = request.args.get("first_dragon", "")
-    first_riftherald = request.args.get("first_riftherald", "")
+    first_riftherald = request.args.get("first_riftherald", "") 
 
+    print(first_blood)
+    print(first_tower)
+    print(first_inhib)
+    print(first_baron)
+    print(first_dragon)
+    print(first_riftherald)
 
-    prediction = "1"
+    best_trees = []
+    with open("best_tree.txt", "r") as data:
+        best_tree = ast.literal_eval(data.read())
+
+    rf = MyRandomForestClassifier()
+    rf.trees = copy.deepcopy(best_tree)
+
+    x = [int(first_blood), int(first_tower), int(first_inhib), int(first_baron), int(first_dragon), int(first_riftherald)]
+    prediction = rf.predict([x])
 
     if prediction is not None:
         result = {"prediction": prediction}
