@@ -3,6 +3,7 @@ from os import major
 import random 
 import numpy as np
 import copy
+import matplotlib.pyplot as plt
 
 def least_squares(x,y):
     x_avg = sum(x)/len(x)
@@ -299,3 +300,12 @@ def tdidt_random_forest(current_instances, att_indexes, att_domains, F):
             values_subtree.append(subtree)
             tree.append(values_subtree)
     return tree
+
+def bar_chart(x, y):
+    if len(x) > 12:
+        plt.figure(figsize=(18,5))
+    else: 
+        plt.figure()
+    plt.bar(x, y, width=.5)
+    plt.xticks(x, rotation=45, horizontalalignment="right", size='small')
+    plt.show()
