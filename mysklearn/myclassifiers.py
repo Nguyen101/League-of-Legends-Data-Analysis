@@ -390,7 +390,7 @@ class MyRandomForestClassifier:
         self.y_train = None
         self.trees = None
 
-    def fit(self, X_train, y_train, M=7, N=20, F=2):
+    def fit(self, X_train, y_train, N=20, M=7, F=2):
         """Fits a random forest classifier to X_train and y_train using the TDIDT (top down induction of decision tree) algorithm.
         Args:
             X_train(list of list of obj): The list of training instances (samples). 

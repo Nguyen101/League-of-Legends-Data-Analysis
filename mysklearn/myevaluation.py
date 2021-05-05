@@ -26,7 +26,6 @@ def train_test_split(X, y, test_size=0.33, random_state=None, shuffle=True):
        random.seed(random_state)
     
     if shuffle: 
-        # -------- NOTE untested --------
         myutils.randomize_in_place(X, parallel_list=y)
 
     num_instances = len(X)

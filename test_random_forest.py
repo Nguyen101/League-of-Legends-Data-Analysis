@@ -27,6 +27,6 @@ def test_random_forest():
     assert len(rf.trees) == 7
 
     rf = MyRandomForestClassifier()
-    rf.fit(interview_table, interview_class_train, M=6, N=20, F=2)
+    rf.fit(interview_table, interview_class_train, M=8, N=20, F=2)
 
-    assert len(rf.trees) == 6
+    assert len(rf.trees) == 8
