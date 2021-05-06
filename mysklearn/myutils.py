@@ -270,6 +270,7 @@ def bar_chart(x, y):
         plt.figure()
     plt.bar(x, y, width=.5)
     plt.xticks(x, rotation=45, horizontalalignment="right", size='small')
+    plt.ylabel("Game %")
     plt.show()
 
 def pie_chart(labs, data):
